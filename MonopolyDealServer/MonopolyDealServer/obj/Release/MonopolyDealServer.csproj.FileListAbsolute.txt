@@ -1,0 +1,12 @@
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\bin\Release\MonopolyDealServer.exe
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\bin\Release\MonopolyDealServer.pdb
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.csprojResolveAssemblyReference.cache
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MainWindow.baml
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MainWindow.g.cs
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\App.g.cs
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer_MarkupCompile.cache
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.g.resources
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.Properties.Resources.resources
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.csproj.GenerateResource.Cache
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.exe
+C:\Users\Eric\Desktop\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer.pdb
