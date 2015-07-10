@@ -18,6 +18,7 @@ namespace SocketDLL
         private IPHostEntry ipEntry = null;
         private static string address_string = "";
         private IPAddress address = null;
+        private IPAddress[] addr = null;
         private IPEndPoint endpoint = null;
         //private IPAddress ipAddress = null;
         private int port;
@@ -43,28 +44,31 @@ namespace SocketDLL
             socketType = SocketType.Stream;
             try
             {
+                ipEntry = Dns.GetHostEntry(Dns.GetHostName());
+                addr = ipEntry.AddressList;
+                //endpoint = new IPEndPoint(addr[0], port);
                 // TODO: This is so it will work for now in Unity. Go back and use
                 // getAddress function to have the user input the IP address of the 
                 // machine
                 //address_string = "192.168.1.101";
                 //ipAddress = IPAddress.Parse(address_string);
-                ipEntry = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress[] addr = ipEntry.AddressList;
-                for (int i = 0; i < addr.Length; i++)
-                {
-                    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
+                //ipEntry = Dns.GetHostEntry(Dns.GetHostName());
+                //IPAddress[] addr = ipEntry.AddressList;
+                //for (int i = 0; i < addr.Length; i++)
+                //{
+                //    Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
                     
-                }
-                if (ipAddress == "")
-                {
-                    address = addr[addr.Length - offset];
-                }
-                else
-                {
-                    address = IPAddress.Parse(ipAddress);
-                }
-                Console.WriteLine("Using the Address {0}: {1}", address.ToString(),port);                
-                endpoint = new IPEndPoint(address, port);
+                //}
+                //if (ipAddress == "")
+                //{
+                //    address = addr[addr.Length - offset];
+                //}
+                //else
+                //{
+                //    address = IPAddress.Parse(ipAddress);
+                //}
+                //Console.WriteLine("Using the Address {0}: {1}", address.ToString(),port);                
+                //endpoint = new IPEndPoint(address, port);
             }
             catch (SocketException ex)
             {
@@ -111,8 +115,9 @@ namespace SocketDLL
         public int connectToServer()
         {
             try
-            {   
-                client.Connect(endpoint);
+            {
+                client.Connect(addr[0], port);
+                //client.Connect(endpoint);
                 if (client.Connected)
                 {
                     System.Console.WriteLine("Successfully connected");

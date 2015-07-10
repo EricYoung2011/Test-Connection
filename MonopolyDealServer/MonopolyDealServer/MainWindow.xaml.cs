@@ -31,7 +31,8 @@ namespace MonopolyDealServer
         private static int numOfPlayers = 1;
         private static int serverPort = 20000;
         //private static int serverPort2 = 20001;
-        private static string serverIP = "10.66.252.176";
+        private static string serverIP = "129.59.122.25";
+        //private static string serverIP = "";
         //private static string serverIP = "127.0.0.1";
         private static state serverState = state.initialize;
         private static string dataToSend = "";

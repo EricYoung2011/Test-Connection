@@ -52,6 +52,7 @@ namespace SocketDLL
             {
                 ipEntry = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress[] addr = ipEntry.AddressList;
+                //endpoint = new IPEndPoint(addr[0], port);
                 for (int i = 0; i < addr.Length; i++)
                 {
                     Console.WriteLine("IP Address {0}: {1} ", i, addr[i].ToString());
