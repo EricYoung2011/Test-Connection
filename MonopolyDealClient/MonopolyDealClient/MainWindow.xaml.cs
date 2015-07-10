@@ -27,7 +27,8 @@ namespace MonopolyDealClient
         //Why can I only see these if they are static?
         private static ClientSocket client;
         private static int serverPort = 20000;
-        private static string serverIP = "127.0.0.1";
+        private static string serverIP = "10.66.252.176";
+        //private static string serverIP = "127.0.0.1";
         private static state clientState = state.initialize;
         private static byte[] dataToSend;
         private static string myName = "";
