@@ -21,7 +21,8 @@ namespace SocketDLL
         private IPAddress address = null;
         private IPEndPoint endpoint = null;
         private int port;
-
+        
+
         // TO DO: add attributes that hold address information and so on see an example at
         // http://msdn.microsoft.com/en-us/library/system.net.sockets.socket.aspx
 
@@ -47,7 +48,8 @@ namespace SocketDLL
         {
             socketType = SocketType.Stream;
             protocolType = ProtocolType.Tcp;
-            addressFamily = AddressFamily.InterNetwork;
+            //addressFamily = AddressFamily.InterNetwork;
+            addressFamily = AddressFamily.InterNetworkV6;
             try
             {
                 ipEntry = Dns.GetHostEntry(Dns.GetHostName());
