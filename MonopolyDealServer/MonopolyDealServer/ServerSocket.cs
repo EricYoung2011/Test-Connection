@@ -22,7 +22,8 @@ namespace SocketDLL
         private IPEndPoint endpoint = null;
         private int port;
         
-
+
+
         // TO DO: add attributes that hold address information and so on see an example at
         // http://msdn.microsoft.com/en-us/library/system.net.sockets.socket.aspx
 
