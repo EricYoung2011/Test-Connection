@@ -35,10 +35,9 @@ namespace SocketDLL
         public ClientSocket(int _port, int _ipAddressOffset,int _clientPort,string _clientIP, string _ipAddress="")
         {
             port = _port;
-            init(_ipAddressOffset, _ipAddress);
             clientPort = _clientPort;
             clientAddress = IPAddress.Parse(_clientIP);
-            clientEndpoint = new IPEndPoint(clientAddress, clientPort);
+            init(_ipAddressOffset, _ipAddress);
         }
 
         /// <summary>
@@ -107,6 +106,7 @@ namespace SocketDLL
             try
             {
                 client = new Socket(addressFamily, socketType, protocolType);
+                clientEndpoint = new IPEndPoint(clientAddress, clientPort);
                 client.Bind(clientEndpoint);
             }
             catch (SocketException ex)
