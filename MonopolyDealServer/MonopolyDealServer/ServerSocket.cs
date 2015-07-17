@@ -50,7 +50,7 @@ namespace SocketDLL
             socketType = SocketType.Stream;
             protocolType = ProtocolType.Tcp;
             //addressFamily = AddressFamily.InterNetwork;
-            addressFamily = AddressFamily.InterNetworkV6;
+            addressFamily = AddressFamily.InterNetwork;
             try
             {
                 ipEntry = Dns.GetHostEntry(Dns.GetHostName());

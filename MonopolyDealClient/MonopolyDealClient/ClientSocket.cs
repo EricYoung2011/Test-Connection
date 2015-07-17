@@ -40,7 +40,7 @@ namespace SocketDLL
         {
             //addressFamily = AddressFamily.InterNetwork;
             protocolType = ProtocolType.Tcp;
-            addressFamily = AddressFamily.InterNetworkV6;
+            addressFamily = AddressFamily.InterNetwork;
             socketType = SocketType.Stream;
             try
             {
