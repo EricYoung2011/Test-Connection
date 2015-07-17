@@ -12,14 +12,19 @@ namespace SocketDLL
         private Socket server = null;
         private Socket client = null;
         private StreamData data = null;
+        private int clientPort;
         private AddressFamily addressFamily;
         private SocketType socketType;
         private ProtocolType protocolType;
         private IPHostEntry ipEntry = null;
         private static string address_string = "";
+        private static string clientAddress_string = "";
         private IPAddress address = null;
         private IPAddress[] addr = null;
         private IPEndPoint endpoint = null;
+        private IPAddress clientAddress = null;
+        private IPAddress[] clientAddr = null;
+        private IPEndPoint clientEndpoint = null;
         //private IPAddress ipAddress = null;
         private int port;
 
@@ -27,10 +32,13 @@ namespace SocketDLL
         /// Calls all the initial methods
         /// like create the sockets and init the 
         /// sockets        
-        public ClientSocket(int _port, int _ipAddressOffset, string _ipAddress="")
+        public ClientSocket(int _port, int _ipAddressOffset,int _clientPort,string _clientIP, string _ipAddress="")
         {
             port = _port;
             init(_ipAddressOffset, _ipAddress);
+            clientPort = _clientPort;
+            clientAddress = IPAddress.Parse(_clientIP);
+            clientEndpoint = new IPEndPoint(clientAddress, clientPort);
         }
 
         /// <summary>
@@ -99,6 +107,7 @@ namespace SocketDLL
             try
             {
                 client = new Socket(addressFamily, socketType, protocolType);
+                client.Bind(clientEndpoint);
             }
             catch (SocketException ex)
             {
