@@ -146,7 +146,7 @@ namespace SocketDLL
         /// </summary>
         /// <param name="serverSocket"></param>
         /// <param name="receivedData"></param>
-        public byte[] receiveData(Socket serverSocket, StreamData receivedData)
+        public byte[] receiveData(Socket serverSocket)
         {
             byte[] buffer = new byte[2000];
             byte[] example = new byte[1];
@@ -173,9 +173,7 @@ namespace SocketDLL
                         stillSorting++;
                     }
                 }
-                data = receivedData.decode(buffer);
                 System.Console.WriteLine("Received the following data:\n");
-                receivedData.printData();
                 return buffer; // data received and is ready
             }
             catch (SocketException ex)
@@ -208,7 +206,7 @@ namespace SocketDLL
         /// <param name="receivedData"></param>
         /// <param name="pollingFrequency"></param>
         /// <returns>returns code to indicate if it receives and/or error code</returns>
-        public byte[] pollAndReceiveData(Socket serverSocket, StreamData receivedData, int pollingFrequency)
+        public byte[] pollAndReceiveData(Socket serverSocket, int pollingFrequency)
         {
             bool available=false; int iResult = 0;
             try
@@ -245,7 +243,7 @@ namespace SocketDLL
             {
                 try
                 {
-                    return receiveData(client, receivedData);
+                    return receiveData(client);
                     //return receiveData(serverSocket, receivedData);
                 }
                 catch (SocketException ex)
@@ -304,6 +302,12 @@ namespace SocketDLL
                 System.Console.WriteLine("Error: Invalid formatting");
                 return 1;
             }
+        }
+
+        public void stop()
+        {
+            client.Shutdown(SocketShutdown.Both);
+            client.Close();
         }
 
         public bool Connected

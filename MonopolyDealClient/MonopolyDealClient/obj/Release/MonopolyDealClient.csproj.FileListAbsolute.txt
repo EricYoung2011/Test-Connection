@@ -22,3 +22,6 @@ C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealCl
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\MonopolyDealClient.g.resources
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\MonopolyDealClient.Properties.Resources.resources
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\MonopolyDealClient.csproj.GenerateResource.Cache
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\playerDisplay.g.cs
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\MonopolyDealClient_MarkupCompile.lref
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealClient\MonopolyDealClient\obj\Release\playerDisplay.baml

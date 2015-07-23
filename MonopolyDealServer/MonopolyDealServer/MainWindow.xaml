@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <TextBox x:Name="textBlock" HorizontalAlignment="Left" Height="55" Margin="35,23,0,0" TextWrapping="Wrap" Text="PLEASE..." VerticalAlignment="Top" Width="142" AllowDrop="False"/>
-        <TextBox x:Name="display" HorizontalAlignment="Left" Height="257" Margin="262,23,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="159" IsReadOnly="True"/>
-        <Button x:Name="sendButton" Content="Send" HorizontalAlignment="Left" Margin="102,92,0,0" VerticalAlignment="Top" Width="75" Click="sendButton_Click"/>
+        <TextBox x:Name="textBlock" HorizontalAlignment="Left" Height="21" Margin="35,57,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="142" AllowDrop="False"/>
+        <Button x:Name="sendButton" Content="Search for Clients" HorizontalAlignment="Left" Margin="235,99,0,0" VerticalAlignment="Top" Width="106" Click="sendButton_Click"/>
+        <TextBox x:Name="textBlock_players" HorizontalAlignment="Left" Height="21" Margin="199,57,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="142" AllowDrop="False"/>
 
     </Grid>
 </Window>

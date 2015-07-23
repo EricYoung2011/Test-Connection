@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Button x:Name="connectButton" Content="Connect" HorizontalAlignment="Left" Margin="124,30,0,0" VerticalAlignment="Top" Width="75" Click="connectButton_Click" />
-        <TextBox x:Name="nameBlock" HorizontalAlignment="Left" Height="20" Margin="10,30,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="99"/>
-        <TextBox x:Name="display" HorizontalAlignment="Left" Height="240" Margin="312,21,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="181" IsReadOnly="True"/>
-        <TextBox x:Name="textBlock" HorizontalAlignment="Left" Height="66" Margin="10,86,0,0" TextWrapping="Wrap" Text="Will this work?" VerticalAlignment="Top" Width="198"/>
-        <Button x:Name="sendButton" Content="Send" HorizontalAlignment="Left" Margin="133,157,0,0" VerticalAlignment="Top" Width="75" Click="sendButton_Click"/>
+        <Button x:Name="connectButton" Content="Connect" HorizontalAlignment="Left" Margin="197,226,0,0" VerticalAlignment="Top" Width="75" Click="connectButton_Click" />
+        <TextBox x:Name="myIPBlock" HorizontalAlignment="Left" Height="20" Margin="61,66,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="instructions1" Content="Enter YOUR IP (Google)" HorizontalAlignment="Left" Margin="61,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
+        <Label x:Name="instructions2" Content="Enter server's IP (Ask Eric)" HorizontalAlignment="Left" Margin="236,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
+        <TextBox x:Name="serverIPBlock" HorizontalAlignment="Left" Height="20" Margin="236,66,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Left" Margin="162,128,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="nameBlock" HorizontalAlignment="Left" Height="20" Margin="162,159,0,0" TextWrapping="Wrap" Text="Eric" VerticalAlignment="Top" Width="148"/>
 
     </Grid>
 </Window>

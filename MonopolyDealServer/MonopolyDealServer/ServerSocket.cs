@@ -186,7 +186,7 @@ namespace SocketDLL
         /// <param name="clientSocket"></param>
         /// <param name="receivedData"></param>
         /// <returns>returns error code, if any</returns>
-        public byte[] receiveData(Socket clientSocket, StreamData receivedData)
+        public byte[] receiveData(Socket clientSocket)
         {
             byte[] buffer = new byte[2000];
             byte[] example = new byte[1];
@@ -212,9 +212,7 @@ namespace SocketDLL
                         stillSorting++;
                     }
                 }
-                data = receivedData.decode(buffer);
                 System.Console.WriteLine("Received the following data:\n");
-                receivedData.printData();
                 return buffer; // data received and is ready
             }
             catch (SocketException ex)
@@ -250,14 +248,14 @@ namespace SocketDLL
         /// <param name="receivedData"></param>
         /// <param name="pollingFrequency"></param>
         /// <returns>returns code to indicate if it receives and/or error code</returns>
-        public byte[] pollAndReceiveData(Socket clientSocket, StreamData receivedData, int pollingFrequency)
+        public byte[] pollAndReceiveData(Socket clientSocket, int pollingFrequency)
         {
             bool available = clientSocket.Poll(pollingFrequency, SelectMode.SelectRead);
             if (available)
             {
                 try
                 {
-                    return receiveData(clientSocket, receivedData);
+                    return receiveData(clientSocket);
                 }
                 catch (SocketException ex)
                 {
