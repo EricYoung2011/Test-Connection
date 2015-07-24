@@ -34,7 +34,16 @@ public static class JsonUtilities
         using (MemoryStream reader = new MemoryStream(Encoding.ASCII.GetBytes(s)))
         {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(type);
-            return (Object)serializer.ReadObject(reader);
+            try
+            {
+                return (Object)serializer.ReadObject(reader);
+            }
+            catch (Exception ex)
+            {
+                Exception boutTime = ex;
+                Exception inner = ex.InnerException;
+                return (Object)5;
+            }
         }
     }
 }

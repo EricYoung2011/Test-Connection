@@ -25,3 +25,6 @@ C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealSe
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\obj\Release\playerTurn.g.cs
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\obj\Release\MonopolyDealServer_MarkupCompile.lref
 C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\obj\Release\playerTurn.baml
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\bin\Release\Newtonsoft.Json.dll
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\bin\Release\Newtonsoft.Json.pdb
+C:\Users\Eric\Documents\GitHub\Test-Connection\MonopolyDealServer\MonopolyDealServer\bin\Release\Newtonsoft.Json.xml

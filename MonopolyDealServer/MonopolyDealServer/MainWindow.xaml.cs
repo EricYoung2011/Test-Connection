@@ -20,9 +20,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net.Sockets;
 using System.Timers;
+using Newtonsoft.Json;
 
 namespace MonopolyDealServer
 {
+
     public enum Card
     {
         One,
@@ -107,7 +109,7 @@ namespace MonopolyDealServer
         #region Variables
         private static List<ServerSocket> servers = new List<ServerSocket>();
         public static int numOfPlayers;
-        private static int serverPort = 50502;
+        public static int serverPort = 50502;
         private static string serverIP;
         public static byte[] storage;
         public static List<string> playerNames = new List<string>();
@@ -148,10 +150,12 @@ namespace MonopolyDealServer
         public static bool doublePlayed = false;
         public static bool doublePlayed2 = false;
         public static List<int> monopolyPropsNeeded = new List<int>() { 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 20 };
+        public static List<Card> testHand = new List<Card>() { Card.Birthday__2, Card.DealBreaker__5 };
         public static List<List<Card>> AllHands = new List<List<Card>>();
         public static List<List<Card>> AllTableMoney = new List<List<Card>>();
+        public static List<int> turnsLeft = new List<int>();
         public static string newUniversalPrompt;
-        public static List<string> individualPrompts;
+        public static List<string> individualPrompts = new List<string>();
         //Heirarchy... 
         //1: All properties on table
         //2: Individual's properties
@@ -195,7 +199,7 @@ namespace MonopolyDealServer
             acknowledgeAttack,
         }
         public static List<playerTurn> playerTurns = new List<playerTurn>();
-        public static Type type;
+        //public static gameState currGameState;
 #endregion
 
         #region Deck Definitions
@@ -333,6 +337,18 @@ namespace MonopolyDealServer
             InitializeComponent();
             aTimer.Elapsed += OnTimedEvent;
             aTimer.Enabled = true;
+
+            AllHands.Add(testHand);
+            //Hashtable tempStorage = new Hashtable();
+            //tempStorage.Add("ServerPort", serverPort);
+            //tempStorage.Add("NumOfPlayers", numOfPlayers);
+            //tempStorage.Add("MyPlayerNum", servers.Count - 1);
+            //int bob = (int)tempStorage["ServerPort"];
+
+            //Card card = Card.Birthday__2;
+            //string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(card);
+            //Card newcard = Newtonsoft.Json.JsonConvert.DeserializeObject<Card>(tempString);
+
             //StreamData sd = new StreamData("");
             //byte[] storage = GetBytes(textBlock.Text);
             //server.sendData(server.Client,storage) ;
@@ -351,8 +367,22 @@ namespace MonopolyDealServer
             {
                 servers.Add(new ServerSocket(50501, 2, serverIP));
                 servers[servers.Count - 1].start();
-                byte[] newPort = GetBytes(serverPort.ToString());
-                servers[servers.Count - 1].sendData(servers[servers.Count - 1].Client, newPort);
+                //Hashtable tempStorage = new Hashtable();
+                //tempStorage.Add("ServerPort", serverPort);
+                //tempStorage.Add("NumOfPlayers", numOfPlayers);
+                //tempStorage.Add("MyPlayerNum", servers.Count - 1);
+                //string tempString = JsonUtilities.SerializeObjectToJSON(tempStorage);
+                //string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(tempStorage);
+                //tempStorage = (Hashtable)JsonUtilities.DeserializeObjectFromJSON(tempString, tempStorage.GetType());
+
+                gameState currGameState = new gameState();
+                //string tempString = JsonUtilities.SerializeObjectToJSON(currGameState);
+                string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(currGameState);
+                byte[] toSend = GetBytes(tempString.ToString());
+                string newString = GetString(toSend);
+                //gameState newGameState = (gameState)JsonUtilities.DeserializeObjectFromJSON(newString, currGameState.GetType());
+                //int tempPort = newGameState.serverPort;
+                servers[servers.Count - 1].sendData(servers[servers.Count - 1].Client, toSend);
                 servers[servers.Count - 1].stop();
                 servers[servers.Count - 1] = new ServerSocket(serverPort, 2, serverIP);
                 servers[servers.Count - 1].start();
@@ -361,7 +391,6 @@ namespace MonopolyDealServer
             }
             if (serverState == state.getName)
             {
-                StreamData sd = new StreamData("");
                 byte[] storage = null;
                 storage = servers[servers.Count - 1].pollAndReceiveData(servers[servers.Count - 1].Client, 2);
                 if (storage.Count() > 2)
@@ -374,6 +403,7 @@ namespace MonopolyDealServer
                     else
                     {
                         serverState = state.transmit;
+                        beginMonopolyDeal();
                     }
                 }
             }
@@ -412,38 +442,16 @@ namespace MonopolyDealServer
             //}
         }
 
-        public void sendMessages()
+        public static void sendMessage(gameState currState, int recipient)
         {
-            for (int player = 0; player < numOfPlayers; player++)
-            {
-                Hashtable message = new Hashtable();
-                message.Add("NumOfPlayers", numOfPlayers);
-                message.Add("PlayerNum", playerNum);
-                message.Add("AllTableProperties", AllTableProperties);
-                message.Add("AllTableMoney", AllTableMoney);
-                message.Add("AllHands", AllHands);
-                message.Add("PlayerNames", playerNames);
-                message.Add("PlayNum", playNum);
-                message.Add("Button1Text", playerTurns[player].button1.Content.ToString());
-                message.Add("Button1Visibility", playerTurns[player].button1.Visibility);
-                message.Add("Button2Text", playerTurns[player].button2.Content.ToString());
-                message.Add("Button2Visibility", playerTurns[player].button2.Visibility);
-                message.Add("Button3Text", playerTurns[player].button3.Content.ToString());
-                message.Add("Button3Visibility", playerTurns[player].button3.Visibility);
-                message.Add("ButtonBackText", playerTurns[player].buttonBack.Content.ToString());
-                message.Add("ButtonBackVisibility", playerTurns[player].buttonBack.Visibility);
-                message.Add("NumCardsInDeck", deckShuffled.Count());
-                message.Add("NewUniversalPrompt", newUniversalPrompt);
-                message.Add("IndividualPrompt", individualPrompts);
-                string messageString = JsonUtilities.SerializeObjectToJSON(message);
-                byte[] messageByte = GetBytes(messageString);
-                servers[player].sendData(servers[player].Client, messageByte);
-            }
-            newUniversalPrompt = "";
+             string messageString = JsonUtilities.SerializeObjectToJSON(currState);
+             byte[] messageByte = GetBytes(messageString);
+             servers[recipient].sendData(servers[recipient].Client, messageByte);
         }
 
         static byte[] GetBytes(string str)
         {
+            //byte[] bytes = Encoding.ASCII.GetBytes(str);
             byte[] bytes = new byte[str.Length * sizeof(char)];
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
@@ -467,15 +475,10 @@ namespace MonopolyDealServer
 
         #region Monopoly Deal Stuff
         
-        public void beginMonopolyDeal()
+        public static void beginMonopolyDeal()
         {
-            InitializeComponent();
-            double left = 0;
-            double top = 0;
             for (int i = 0; i < numOfPlayers; i++)
             {
-                left = (i % 2) * 680;
-                top = (i * 175) - (i % 2) * 175;
                 playerTurns.Add(new playerTurn(i));
             }
             for (int i = 0; i < numOfPlayers; i++)
@@ -484,6 +487,8 @@ namespace MonopolyDealServer
                 AllHands.Add(new List<Card>());
                 AllTableMoney.Add(new List<Card>());
                 AllTableProperties.Add(new List<List<Card>>());
+                turnsLeft.Add(0);
+                individualPrompts.Add("");
                 otherMoneyLabels.Add(new List<TextBox>());
                 otherNames.Add(new List<Button>());
                 otherPropertyLabels.Add(new List<TextBox>());
@@ -518,7 +523,37 @@ namespace MonopolyDealServer
             dealDeck();
             playerTurns[0].showTable();
             playerTurns[0].readyToBegin();
-            this.Hide();
+            //this.Hide();
+        }
+
+        public static void constructMessages()
+        {
+            for (int player = 0; player < numOfPlayers; player++)
+            {
+                gameState currGameState = new gameState();
+                sendMessage(currGameState, player);
+                //Hashtable message = new Hashtable();
+                //message.Add("NumOfPlayers", numOfPlayers);
+                //message.Add("PlayerNum", playerNum);
+                //message.Add("AllTableProperties", AllTableProperties);
+                //message.Add("AllTableMoney", AllTableMoney);
+                //message.Add("Hand", AllHands[player]);
+                //message.Add("PlayerNames", playerNames);
+                //message.Add("PlayNum", playNum);
+                //message.Add("Button1Text", playerTurns[player].button1.Content.ToString());
+                //message.Add("Button1Visibility", playerTurns[player].button1.Visibility);
+                //message.Add("Button2Text", playerTurns[player].button2.Content.ToString());
+                //message.Add("Button2Visibility", playerTurns[player].button2.Visibility);
+                //message.Add("Button3Text", playerTurns[player].button3.Content.ToString());
+                //message.Add("Button3Visibility", playerTurns[player].button3.Visibility);
+                //message.Add("ButtonBackText", playerTurns[player].buttonBack.Content.ToString());
+                //message.Add("ButtonBackVisibility", playerTurns[player].buttonBack.Visibility);
+                //message.Add("NumCardsInDeck", deckShuffled.Count());
+                //message.Add("NewUniversalPrompt", newUniversalPrompt);
+                //message.Add("IndividualPrompt", playerTurns[player].Prompt.Content.ToString());
+                //sendMessage(message, player);
+                //newUniversalPrompt = "";
+            }
         }
 
         public static void setupLayout()
