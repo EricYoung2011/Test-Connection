@@ -336,7 +336,7 @@ namespace MonopolyDealClient
             myDisplay.button3.Click += button3_Click;
             myDisplay.buttonBack.Click += buttonBack_Click;
             myDisplay.Table_Properties.SelectionChanged += Table_Properties_SelectionChanged;
-            myDisplay.Table_Properties.MouseDoubleClick += Table_Properties_MouseDoubleClick;
+            //myDisplay.Table_Properties.MouseDoubleClick += Table_Properties_MouseDoubleClick;
             myDisplay.Table_Money.SelectionChanged += Table_Money_SelectionChanged;
             myDisplay.Hand.MouseDoubleClick += Hand_MouseDoubleClick;
             //myDisplay.button1.Visibility = System.Windows.Visibility.Visible;
@@ -753,20 +753,28 @@ namespace MonopolyDealClient
                     }
                 }
             }
-            //myDisplay.Hand.Visibility = System.Windows.Visibility.Visible;
-            //myDisplay.Table_Properties.Visibility = System.Windows.Visibility.Visible;
-            //myDisplay.Table_Money.Visibility = System.Windows.Visibility.Visible;
-            myDisplay.Hand.IsEnabled = true;
-            myDisplay.Table_Properties.IsEnabled = true;
-            myDisplay.Table_Money.IsEnabled = true;
+            myDisplay.Hand.Visibility = System.Windows.Visibility.Visible;
+            myDisplay.Table_Properties.Visibility = System.Windows.Visibility.Visible;
+            myDisplay.Table_Money.Visibility = System.Windows.Visibility.Visible;
             foreach (Button playerName in otherNames)
             {
-                playerName.IsEnabled = true;
+                playerName.Visibility = System.Windows.Visibility.Visible;
             }
             foreach (ListBox otherProps in otherTable_Properties)
             {
-                otherProps.IsEnabled = true;
+                otherProps.Visibility = System.Windows.Visibility.Visible;
             }
+            //myDisplay.Hand.IsEnabled = true;
+            //myDisplay.Table_Properties.IsEnabled = true;
+            //myDisplay.Table_Money.IsEnabled = true;
+            //foreach (Button playerName in otherNames)
+            //{
+            //    playerName.IsEnabled = true;
+            //}
+            //foreach (ListBox otherProps in otherTable_Properties)
+            //{
+            //    otherProps.IsEnabled = true;
+            //}
         }
 
         public void disableTable()
@@ -775,17 +783,28 @@ namespace MonopolyDealClient
             myDisplay.button2.Visibility = System.Windows.Visibility.Hidden;
             myDisplay.button3.Visibility = System.Windows.Visibility.Hidden;
             myDisplay.buttonBack.Visibility = System.Windows.Visibility.Hidden;
-            myDisplay.Hand.IsEnabled = false;
-            myDisplay.Table_Properties.IsEnabled = false;
-            myDisplay.Table_Money.IsEnabled = false;
+            myDisplay.Hand.Visibility = System.Windows.Visibility.Hidden;
+            myDisplay.Table_Money.Visibility = System.Windows.Visibility.Hidden;
+            myDisplay.Table_Properties.Visibility = System.Windows.Visibility.Hidden;
             foreach (Button playerName in otherNames)
             {
-                playerName.IsEnabled = false;
+                playerName.Visibility = System.Windows.Visibility.Hidden;
             }
             foreach (ListBox otherProps in otherTable_Properties)
             {
-                otherProps.IsEnabled = false;
+                otherProps.Visibility = System.Windows.Visibility.Hidden;
             }
+            //myDisplay.Hand.IsEnabled = false;
+            //myDisplay.Table_Properties.IsEnabled = false;
+            //myDisplay.Table_Money.IsEnabled = false;
+            //foreach (Button playerName in otherNames)
+            //{
+            //    playerName.IsEnabled = false;
+            //}
+            //foreach (ListBox otherProps in otherTable_Properties)
+            //{
+            //    otherProps.IsEnabled = false;
+            //}
         }
 
         static byte[] GetBytes(string str)
@@ -909,11 +928,11 @@ namespace MonopolyDealClient
             sendClientEvent();
         }
 
-        public void Table_Properties_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            propertiesDoubleClicked = 1;
-            sendClientEvent();
-        }
+        //public void Table_Properties_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //{
+        //    propertiesDoubleClicked = 1;
+        //    sendClientEvent();
+        //}
 
         public void Hand_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

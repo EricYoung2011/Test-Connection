@@ -1874,7 +1874,7 @@ namespace MonopolyDealServer
         //Payments
         public void acknowledgeAttack()
         {
-            MainWindow.stage = MainWindow.turnStage.acknowledgeAttack;
+            MainWindow.stage = MainWindow.turnStage.acknowledgeAttack1;
             Prompt.Content = MainWindow.playerNames[MainWindow.playerNum] + " is ";
             button1.Visibility = System.Windows.Visibility.Visible;
             button1.Content = "OK";
@@ -2778,7 +2778,7 @@ namespace MonopolyDealServer
                     return;
 
                 #region acknowledgeAttack
-                case MainWindow.turnStage.acknowledgeAttack:
+                case MainWindow.turnStage.acknowledgeAttack1:
                     string stringPlayer = buttonPlayer.Content.ToString();
                     int player = (stringPlayer[7] - 49);
                     if (player == MainWindow.playerNum)
@@ -2786,6 +2786,7 @@ namespace MonopolyDealServer
                         finishPlayAction();
                         return;
                     }
+                    MainWindow.stage = MainWindow.turnStage.acknowledgeAttack2;
                     button1.Visibility = System.Windows.Visibility.Hidden;
                     button2.Visibility = System.Windows.Visibility.Hidden;
                     switch (MainWindow.playedCard)
@@ -3100,7 +3101,7 @@ namespace MonopolyDealServer
                     return;
 
                 #region acknowledgeAttack
-                case MainWindow.turnStage.acknowledgeAttack:
+                case MainWindow.turnStage.acknowledgeAttack1:
                     string stringPlayer = buttonPlayer.Content.ToString();
                     int player = (stringPlayer[7] - 49);
                     MainWindow.justSayNos++;
@@ -3202,15 +3203,15 @@ namespace MonopolyDealServer
                     finishPlayAction();
                     return;
 
-                case MainWindow.turnStage.acknowledgeAttack:
+                case MainWindow.turnStage.acknowledgeAttack2:
                     string toDisplay = MainWindow.playerNames[MainWindow.chosenPlayer] + " paid the following cards to " + MainWindow.playerNames[MainWindow.playerNum] + ": ";
-                    foreach (Card item in Table_Money.SelectedItems)
+                    foreach (Card item in MainWindow.tableMoneySelectedItems)
                     {
                         toDisplay += item.ToString() + ", ";
                         MainWindow.AllTableMoney[MainWindow.playerNum].Add(item);
                         MainWindow.AllTableMoney[MainWindow.chosenPlayer].Remove(item);
                     }
-                    foreach (Card item in Table_Properties.SelectedItems)
+                    foreach (Card item in MainWindow.tablePropertiesSelectedItems)
                     {
                         toDisplay += item.ToString() + ", ";
                         MainWindow.propIndex = MainWindow.getPropertyIndex(item);

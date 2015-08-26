@@ -208,7 +208,8 @@ namespace MonopolyDealServer
             doubleRent,
             doubleRentWild,
             checkRent,
-            acknowledgeAttack,
+            acknowledgeAttack1,
+            acknowledgeAttack2,
         }
         public static List<playerTurn> playerTurns = new List<playerTurn>();
         public static clientEvent currClientEvent;
@@ -446,6 +447,7 @@ namespace MonopolyDealServer
                 if (currClientEvent._propertiesSelectionChanged == 1)
                 {
                     updateCards = false;
+                    tablePropertiesSelectedIndex = currClientEvent._tablePropertiesSelectedIndex;
                     tablePropertiesSelectedItems = currClientEvent._tablePropertiesSelectedItems;
                     tableMoneySelectedItems = currClientEvent._tableMoneySelectedItems;
                     Table_Properties_SelectionChanged();
@@ -457,11 +459,11 @@ namespace MonopolyDealServer
                     tableMoneySelectedItems = currClientEvent._tableMoneySelectedItems;
                     Table_Money_SelectionChanged();
                 }
-                if (currClientEvent._propertiesDoubleClicked == 1)
-                {
-                    tablePropertiesSelectedIndex = currClientEvent._tablePropertiesSelectedIndex;
-                    Table_Properties_MouseDoubleClick();
-                }
+                //if (currClientEvent._propertiesDoubleClicked == 1)
+                //{
+                //    tablePropertiesSelectedIndex = currClientEvent._tablePropertiesSelectedIndex;
+                //    Table_Properties_MouseDoubleClick();
+                //}
                 if (currClientEvent._otherPlayerClicked == 1)
                 {
                     playerClicked = currClientEvent._playerClicked;
@@ -1701,7 +1703,88 @@ namespace MonopolyDealServer
 
         public static void Table_Properties_SelectionChanged()
         {
-            if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack)
+            if (tablePropertiesSelectedItems.Count == 1)
+            {
+                if (tablePropertiesSelectedIndex < 0)
+                {
+                    return;
+                }
+                if (MainWindow.stage == MainWindow.turnStage.forcedDeal1)
+                {
+                    MainWindow.cardNum = tablePropertiesSelectedIndex;
+                    Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+                    MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
+                    MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
+                    MainWindow.playerTurns[MainWindow.playerNum].playForcedDeal2();
+                }
+                if (MainWindow.stage == MainWindow.turnStage.rentWild)
+                {
+                    MainWindow.cardNum = tablePropertiesSelectedIndex;
+                    Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+                    MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
+                    MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
+                    MainWindow.payment = MainWindow.getRentAmount();
+                    if ((MainWindow.AllHands[MainWindow.playerNum].Contains(Card.DoubleTheRent__1)) && (MainWindow.playNum < 2))
+                    {
+                        MainWindow.playerTurns[MainWindow.playerNum].askDoubleRentWild();
+                    }
+                    else
+                    {
+                        MainWindow.playerTurns[MainWindow.playerNum].playRentWild2();
+                    }
+                }
+
+                if (MainWindow.stage == MainWindow.turnStage.decidePropertyTypeWild)
+                {
+                    MainWindow.cardNum2 = tablePropertiesSelectedIndex;
+                    MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
+                    MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+                    MainWindow.playerTurns[MainWindow.playerNum].checkPlayCard();
+                }
+
+                if (MainWindow.stage == MainWindow.turnStage.moveCards)
+                {
+                    MainWindow.cardNum = tablePropertiesSelectedIndex;
+                    MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+                    //Problem... propIndex only helps IFF the property is in the normal stack.  This won't work for extra [10] stack
+                    //So... I will first check the extra stack [10] when I remove a card...
+                    if (MainWindow.AllTableProperties[MainWindow.playerNum][10].Contains(MainWindow.propertyCard))
+                    {
+                        MainWindow.propIndex = 10;
+                    }
+                    else
+                    {
+                        MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+                    }
+                    MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
+                    MainWindow.propertyType = MainWindow.getPropertyType(MainWindow.propertyCard);
+                    if (MainWindow.propertyType == PropertyType.Duo)
+                    {
+                        MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideType();
+                    }
+                    else if (MainWindow.propertyType == PropertyType.Wild)
+                    {
+                        MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideTypeWild();
+                    }
+                    else
+                    {
+                        MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = "This card cannot be moved.";
+                        MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Hidden;
+                        MainWindow.playerTurns[MainWindow.playerNum].button2.Visibility = System.Windows.Visibility.Hidden;
+                        MainWindow.playerTurns[MainWindow.playerNum].button3.Visibility = System.Windows.Visibility.Hidden;
+                        MainWindow.playerTurns[MainWindow.playerNum].buttonBack.Visibility = System.Windows.Visibility.Visible;
+                    }
+                    return;
+                }
+                if (MainWindow.stage == MainWindow.turnStage.moveCardsDecideTypeWild)
+                {
+                    MainWindow.cardNum2 = tablePropertiesSelectedIndex;
+                    Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
+                    MainWindow.propIndex2 = MainWindow.getPropertyIndex(currentCard);
+                    MainWindow.playerTurns[MainWindow.playerNum].checkMoveCard();
+                }
+            }
+            if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack2)
             {
                 int totalValue = 0;
                 int numOfWilds = 0;
@@ -1742,7 +1825,7 @@ namespace MonopolyDealServer
 
         public static void Table_Money_SelectionChanged()
         {
-            if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack)
+            if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack2)
             {
                 int totalValue = 0;
                 int numOfWilds = 0;
@@ -1780,112 +1863,114 @@ namespace MonopolyDealServer
             }
         }
 
-        public static void Table_Properties_MouseDoubleClick()
-        {
-            if (tablePropertiesSelectedIndex < 0)
-            {
-                return;
-            }
-            //if (MainWindow.stage == MainWindow.turnStage.slyDeal)
-            //{
-            //    MainWindow.cardNum = Table_Properties.SelectedIndex;
-            //    MainWindow.propertyCard = Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
-            //    string chosenPlayer = buttonPlayer.Content.ToString();
-            //    MainWindow.chosenPlayer = (chosenPlayer[7] - 49);
-            //    MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
-            //    MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
-            //    if (MainWindow.chosenPlayer != MainWindow.playerNum)
-            //    {
-            //        MainWindow.playerTurns[MainWindow.playerNum].checkSlyDeal();
-            //    }
-            //}
+        //public static void Table_Properties_MouseDoubleClick()
+        //{
+        //    if (tablePropertiesSelectedIndex < 0)
+        //    {
+        //        return;
+        //    }
+        //    if (MainWindow.stage == MainWindow.turnStage.forcedDeal1)
+        //    {
+        //        MainWindow.cardNum = tablePropertiesSelectedIndex;
+        //        Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+        //        MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
+        //        MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
+        //        MainWindow.playerTurns[MainWindow.playerNum].playForcedDeal2();
+        //    }
+        //    if (MainWindow.stage == MainWindow.turnStage.rentWild)
+        //    {
+        //        MainWindow.cardNum = tablePropertiesSelectedIndex;
+        //        Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+        //        MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
+        //        MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
+        //        MainWindow.payment = MainWindow.getRentAmount();
+        //        if ((MainWindow.AllHands[MainWindow.playerNum].Contains(Card.DoubleTheRent__1)) && (MainWindow.playNum < 2))
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].askDoubleRentWild();
+        //        }
+        //        else
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].playRentWild2();
+        //        }
+        //    }
 
-            if (MainWindow.stage == MainWindow.turnStage.forcedDeal1)
-            {
-                MainWindow.cardNum = tablePropertiesSelectedIndex;
-                Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
-                MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
-                MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
-                MainWindow.playerTurns[MainWindow.playerNum].playForcedDeal2();
-            }
-            //else if (MainWindow.stage == MainWindow.turnStage.forcedDeal2)
-            //{
-            //    MainWindow.cardNum2 = Table_Properties.SelectedIndex;
-            //    MainWindow.propertyCard = Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
-            //    MainWindow.propIndex2 = MainWindow.getPropertyIndex(MainWindow.propertyCard);
-            //    string chosenPlayer = buttonPlayer.Content.ToString();
-            //    MainWindow.chosenPlayer = (chosenPlayer[7] - 49);
-            //    MainWindow.cardNum2 = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2].IndexOf(MainWindow.propertyCard);
-            //    MainWindow.playerTurns[MainWindow.playerNum].checkForcedDeal();
-            //}
+        //    if (MainWindow.stage == MainWindow.turnStage.decidePropertyTypeWild)
+        //    {
+        //        MainWindow.cardNum2 = tablePropertiesSelectedIndex;
+        //        MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
+        //        MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+        //        MainWindow.playerTurns[MainWindow.playerNum].checkPlayCard();
+        //    }
 
-            if (MainWindow.stage == MainWindow.turnStage.rentWild)
-            {
-                MainWindow.cardNum = tablePropertiesSelectedIndex;
-                Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
-                MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
-                MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
-                MainWindow.payment = MainWindow.getRentAmount();
-                if ((MainWindow.AllHands[MainWindow.playerNum].Contains(Card.DoubleTheRent__1)) && (MainWindow.playNum < 2))
-                {
-                    MainWindow.playerTurns[MainWindow.playerNum].askDoubleRentWild();
-                }
-                else
-                {
-                    MainWindow.playerTurns[MainWindow.playerNum].playRentWild2();
-                }
-            }
+        //    if (MainWindow.stage == MainWindow.turnStage.moveCards)
+        //    {
+        //        MainWindow.cardNum = tablePropertiesSelectedIndex;
+        //        MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+        //        //Problem... propIndex only helps IFF the property is in the normal stack.  This won't work for extra [10] stack
+        //        //So... I will first check the extra stack [10] when I remove a card...
+        //        if (MainWindow.AllTableProperties[MainWindow.playerNum][10].Contains(MainWindow.propertyCard))
+        //        {
+        //            MainWindow.propIndex = 10;
+        //        }
+        //        else
+        //        {
+        //            MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+        //        }
+        //        MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
+        //        MainWindow.propertyType = MainWindow.getPropertyType(MainWindow.propertyCard);
+        //        if (MainWindow.propertyType == PropertyType.Duo)
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideType();
+        //        }
+        //        else if (MainWindow.propertyType == PropertyType.Wild)
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideTypeWild();
+        //        }
+        //        else
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = "This card cannot be moved.";
+        //            MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Hidden;
+        //            MainWindow.playerTurns[MainWindow.playerNum].button2.Visibility = System.Windows.Visibility.Hidden;
+        //            MainWindow.playerTurns[MainWindow.playerNum].button3.Visibility = System.Windows.Visibility.Hidden;
+        //            MainWindow.playerTurns[MainWindow.playerNum].buttonBack.Visibility = System.Windows.Visibility.Visible;
+        //        }
+        //        return;
+        //    }
+        //    if (MainWindow.stage == MainWindow.turnStage.moveCardsDecideTypeWild)
+        //    {
+        //        MainWindow.cardNum2 = tablePropertiesSelectedIndex;
+        //        Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
+        //        MainWindow.propIndex2 = MainWindow.getPropertyIndex(currentCard);
+        //        MainWindow.playerTurns[MainWindow.playerNum].checkMoveCard();
+        //    }
+        //    //if (MainWindow.stage == MainWindow.turnStage.slyDeal)
+        //    //{
+        //    //    MainWindow.cardNum = Table_Properties.SelectedIndex;
+        //    //    MainWindow.propertyCard = Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
+        //    //    string chosenPlayer = buttonPlayer.Content.ToString();
+        //    //    MainWindow.chosenPlayer = (chosenPlayer[7] - 49);
+        //    //    MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+        //    //    MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
+        //    //    if (MainWindow.chosenPlayer != MainWindow.playerNum)
+        //    //    {
+        //    //        MainWindow.playerTurns[MainWindow.playerNum].checkSlyDeal();
+        //    //    }
+        //    //}
 
-            if (MainWindow.stage == MainWindow.turnStage.decidePropertyTypeWild)
-            {
-                MainWindow.cardNum2 = tablePropertiesSelectedIndex;
-                MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
-                MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
-                MainWindow.playerTurns[MainWindow.playerNum].checkPlayCard();
-            }
+            
+        //    //else if (MainWindow.stage == MainWindow.turnStage.forcedDeal2)
+        //    //{
+        //    //    MainWindow.cardNum2 = Table_Properties.SelectedIndex;
+        //    //    MainWindow.propertyCard = Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
+        //    //    MainWindow.propIndex2 = MainWindow.getPropertyIndex(MainWindow.propertyCard);
+        //    //    string chosenPlayer = buttonPlayer.Content.ToString();
+        //    //    MainWindow.chosenPlayer = (chosenPlayer[7] - 49);
+        //    //    MainWindow.cardNum2 = MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex2].IndexOf(MainWindow.propertyCard);
+        //    //    MainWindow.playerTurns[MainWindow.playerNum].checkForcedDeal();
+        //    //}
 
-            if (MainWindow.stage == MainWindow.turnStage.moveCards)
-            {
-                MainWindow.cardNum = tablePropertiesSelectedIndex;
-                MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
-                //Problem... propIndex only helps IFF the property is in the normal stack.  This won't work for extra [10] stack
-                //So... I will first check the extra stack [10] when I remove a card...
-                if (MainWindow.AllTableProperties[MainWindow.playerNum][10].Contains(MainWindow.propertyCard))
-                {
-                    MainWindow.propIndex = 10;
-                }
-                else
-                {
-                    MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
-                }
-                MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(MainWindow.propertyCard);
-                MainWindow.propertyType = MainWindow.getPropertyType(MainWindow.propertyCard);
-                if (MainWindow.propertyType == PropertyType.Duo)
-                {
-                    MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideType();
-                }
-                else if (MainWindow.propertyType == PropertyType.Wild)
-                {
-                    MainWindow.playerTurns[MainWindow.playerNum].moveCardsDecideTypeWild();
-                }
-                else
-                {
-                    MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = "This card cannot be moved.";
-                    MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Hidden;
-                    MainWindow.playerTurns[MainWindow.playerNum].button2.Visibility = System.Windows.Visibility.Hidden;
-                    MainWindow.playerTurns[MainWindow.playerNum].button3.Visibility = System.Windows.Visibility.Hidden;
-                    MainWindow.playerTurns[MainWindow.playerNum].buttonBack.Visibility = System.Windows.Visibility.Visible;
-                }
-                return;
-            }
-            if (MainWindow.stage == MainWindow.turnStage.moveCardsDecideTypeWild)
-            {
-                MainWindow.cardNum2 = tablePropertiesSelectedIndex;
-                Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
-                MainWindow.propIndex2 = MainWindow.getPropertyIndex(currentCard);
-                MainWindow.playerTurns[MainWindow.playerNum].checkMoveCard();
-            }
-        }
+            
+        //}
 
         //public static void Hand_MouseDoubleClick()
         //{
