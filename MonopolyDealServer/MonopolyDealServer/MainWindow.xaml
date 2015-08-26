@@ -1,7 +1,7 @@
 ﻿<Window x:Class="MonopolyDealServer.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closed="Window_Closed">
     <Grid>
         <TextBox x:Name="textBlock" HorizontalAlignment="Left" Height="21" Margin="35,57,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="142" AllowDrop="False"/>
         <Button x:Name="sendButton" Content="Search for Clients" HorizontalAlignment="Left" Margin="235,99,0,0" VerticalAlignment="Top" Width="106" Click="sendButton_Click"/>

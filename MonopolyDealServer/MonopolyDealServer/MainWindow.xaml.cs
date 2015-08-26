@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 namespace MonopolyDealServer
 {
 
+    #region Deck Definitions
     public enum Card
     {
         One,
@@ -101,14 +102,18 @@ namespace MonopolyDealServer
         Duo,
         Wild,
     }
+    #endregion
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         #region Variables
-        private static List<ServerSocket> servers = new List<ServerSocket>();
+        public static List<ServerSocket> servers = new List<ServerSocket>();
+        public static bool beginGame = false;
         public static int numOfPlayers;
+        public static int numOfPlayersConnected;
         public static int serverPort = 50502;
         private static string serverIP;
         public static byte[] storage;
@@ -163,6 +168,13 @@ namespace MonopolyDealServer
         //[brown,utility,blue,lightblue,pink,orange,red,yellow,green,black]
         public static List<List<List<Card>>> AllTableProperties = new List<List<List<Card>>>();
         public static turnStage stage = new turnStage();
+        public static bool updateCards;
+        public static int handSelectedIndex;
+        public static int tablePropertiesSelectedIndex;
+        public static int otherPropertiesSelectedIndex;
+        public static int playerClicked;
+        public static List<Card> tablePropertiesSelectedItems;
+        public static List<Card> tableMoneySelectedItems;
         public enum turnStage
         {
             begin,
@@ -199,6 +211,7 @@ namespace MonopolyDealServer
             acknowledgeAttack,
         }
         public static List<playerTurn> playerTurns = new List<playerTurn>();
+        public static clientEvent currClientEvent;
         //public static gameState currGameState;
 #endregion
 
@@ -338,17 +351,6 @@ namespace MonopolyDealServer
             aTimer.Elapsed += OnTimedEvent;
             aTimer.Enabled = true;
 
-            AllHands.Add(testHand);
-            //Hashtable tempStorage = new Hashtable();
-            //tempStorage.Add("ServerPort", serverPort);
-            //tempStorage.Add("NumOfPlayers", numOfPlayers);
-            //tempStorage.Add("MyPlayerNum", servers.Count - 1);
-            //int bob = (int)tempStorage["ServerPort"];
-
-            //Card card = Card.Birthday__2;
-            //string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(card);
-            //Card newcard = Newtonsoft.Json.JsonConvert.DeserializeObject<Card>(tempString);
-
             //StreamData sd = new StreamData("");
             //byte[] storage = GetBytes(textBlock.Text);
             //server.sendData(server.Client,storage) ;
@@ -367,22 +369,12 @@ namespace MonopolyDealServer
             {
                 servers.Add(new ServerSocket(50501, 2, serverIP));
                 servers[servers.Count - 1].start();
-                //Hashtable tempStorage = new Hashtable();
-                //tempStorage.Add("ServerPort", serverPort);
-                //tempStorage.Add("NumOfPlayers", numOfPlayers);
-                //tempStorage.Add("MyPlayerNum", servers.Count - 1);
-                //string tempString = JsonUtilities.SerializeObjectToJSON(tempStorage);
-                //string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(tempStorage);
-                //tempStorage = (Hashtable)JsonUtilities.DeserializeObjectFromJSON(tempString, tempStorage.GetType());
-
-                gameState currGameState = new gameState();
-                //string tempString = JsonUtilities.SerializeObjectToJSON(currGameState);
-                string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(currGameState);
-                byte[] toSend = GetBytes(tempString.ToString());
-                string newString = GetString(toSend);
-                //gameState newGameState = (gameState)JsonUtilities.DeserializeObjectFromJSON(newString, currGameState.GetType());
-                //int tempPort = newGameState.serverPort;
-                servers[servers.Count - 1].sendData(servers[servers.Count - 1].Client, toSend);
+                numOfPlayersConnected++;
+                if (servers.Count >= numOfPlayers)
+                {
+                    beginGame = true;
+                }
+                sendGameStates(true,0);
                 servers[servers.Count - 1].stop();
                 servers[servers.Count - 1] = new ServerSocket(serverPort, 2, serverIP);
                 servers[servers.Count - 1].start();
@@ -396,57 +388,145 @@ namespace MonopolyDealServer
                 if (storage.Count() > 2)
                 {
                     playerNames.Add(GetString(storage));
-                    if (servers.Count < numOfPlayers)
-                    {
-                        serverState = state.startServers;
-                    }
-                    else
+                    if (beginGame)
                     {
                         serverState = state.transmit;
                         beginMonopolyDeal();
+                        sendGameStates();
                     }
+                    else
+                    {
+                        serverState = state.startServers;
+                    }
+
                 }
             }
 
             if (serverState == state.transmit)
             {
-                checkForMessages();
+                for (int player = 0; player < numOfPlayers; player++)
+                {
+                    checkForMessages(player);
+                }
             }
             aTimer.Enabled = true;
         }
 
-        public void checkForMessages()
+        public void checkForMessages(int clientNumber)
         {
-            for (int player = 0;player<numOfPlayers;player++)
-            {
-            storage = null;
-            try
-            {
-                storage = servers[player].pollAndReceiveData(servers[player].Client, 2);
-            }
-            catch
-            {
-
-            }
+            byte[] storage = null;
+            storage = servers[clientNumber].pollAndReceiveData(servers[clientNumber].Client, 2);
             if (storage.Count() > 2)
             {
+                sendAcknowledgement(clientNumber);
+                string tempString = GetString(storage);
+                currClientEvent = Newtonsoft.Json.JsonConvert.DeserializeObject<clientEvent>(tempString);
+                updateCards = true;
+                if (currClientEvent._button1Clicked==1)
+                {
+                    playerTurns[clientNumber].button1_Click();
+                }
+                if (currClientEvent._button2Clicked == 1)
+                {
+                    playerTurns[clientNumber].button2_Click();
+                }
+                if (currClientEvent._button3Clicked == 1)
+                {
+                    playerTurns[clientNumber].button3_Click();
+                }
+                if (currClientEvent._buttonBackClicked == 1)
+                {
+                    playerTurns[clientNumber].buttonBack_Click();
+                }
+                if (currClientEvent._handDoubleClicked == 1)
+                {
+                    handSelectedIndex = currClientEvent._handSelectedIndex;
+                    Hand_MouseDoubleClick();
+                }
+                if (currClientEvent._propertiesSelectionChanged == 1)
+                {
+                    updateCards = false;
+                    tablePropertiesSelectedItems = currClientEvent._tablePropertiesSelectedItems;
+                    tableMoneySelectedItems = currClientEvent._tableMoneySelectedItems;
+                    Table_Properties_SelectionChanged();
+                }
+                if (currClientEvent._moneySelectionChanged == 1)
+                {
+                    updateCards = false;
+                    tablePropertiesSelectedItems = currClientEvent._tablePropertiesSelectedItems;
+                    tableMoneySelectedItems = currClientEvent._tableMoneySelectedItems;
+                    Table_Money_SelectionChanged();
+                }
+                if (currClientEvent._propertiesDoubleClicked == 1)
+                {
+                    tablePropertiesSelectedIndex = currClientEvent._tablePropertiesSelectedIndex;
+                    Table_Properties_MouseDoubleClick();
+                }
+                if (currClientEvent._otherPlayerClicked == 1)
+                {
+                    playerClicked = currClientEvent._playerClicked;
+                    OtherPlayer_Click();
+                }
+                if (currClientEvent._otherPropertiesDoubleClicked == 1)
+                {
+                    playerClicked = currClientEvent._playerClicked;
+                    otherPropertiesSelectedIndex = currClientEvent._otherPropertiesSelectedIndex;
+                    OtherPlayer_Properties_MouseDoubleClick();
+                }
+                sendGameStates();
+            }
 
-            }
-            }
-            //if(
-            //{
-            //    //Store data 
-            //    dataToSend = "Hello Buddy";
-            //    sd = new StreamData(myName);
-            //    server.sendData(server.Client, sd);
-            //}
         }
 
-        public static void sendMessage(gameState currState, int recipient)
+        public static void sendGameStates(bool getAcknowledge = true,int stage = 1)
         {
-             string messageString = JsonUtilities.SerializeObjectToJSON(currState);
-             byte[] messageByte = GetBytes(messageString);
-             servers[recipient].sendData(servers[recipient].Client, messageByte);
+            for (int clientNum = 0; clientNum < servers.Count; clientNum++)
+            {
+                gameState currGameState = new gameState(clientNum, stage);
+                string tempString = Newtonsoft.Json.JsonConvert.SerializeObject(currGameState);
+                byte[] toSend = GetBytes(tempString.ToString());
+                servers[clientNum].sendData(servers[clientNum].Client, toSend);
+                if (getAcknowledge)
+                {
+                    waitForAcknowledgement(clientNum);
+                }
+            }
+            newUniversalPrompt = "";
+        }
+
+        public void sendAcknowledgement(int clientNum)
+        {
+            string tempString = "Ack";
+            byte[] toSend = GetBytes(tempString.ToString());
+            servers[clientNum].sendData(servers[clientNum].Client, toSend);
+        }
+
+        public static void waitForAcknowledgement(int clientNum)
+        {
+            bool wait = true;
+            DateTime start = DateTime.Now;
+            while (wait)
+            {
+                byte[] storage = null;
+                storage = servers[clientNum].pollAndReceiveData(servers[clientNum].Client, 2);
+                if (storage.Count() > 2)
+                {
+                    string tempString = GetString(storage);
+                    if (tempString == "Ack")
+                    {
+                        wait = false;
+                    }
+                }
+                else
+                {
+                    TimeSpan duration = DateTime.Now - start;
+                    if (duration.TotalMilliseconds > 1000)
+                    {
+                        sendGameStates();
+                        break;
+                    }
+                }
+            }
         }
 
         static byte[] GetBytes(string str)
@@ -471,6 +551,10 @@ namespace MonopolyDealServer
             serverState = state.startServers;
             timerDing();
         }
+
+
+
+
 #endregion
 
         #region Monopoly Deal Stuff
@@ -523,6 +607,12 @@ namespace MonopolyDealServer
             dealDeck();
             playerTurns[0].showTable();
             playerTurns[0].readyToBegin();
+
+            for (int i = 0; i < numOfPlayers; i++)
+            {
+                playerTurns.Add(new playerTurn(i));
+            }
+
             //this.Hide();
         }
 
@@ -530,8 +620,8 @@ namespace MonopolyDealServer
         {
             for (int player = 0; player < numOfPlayers; player++)
             {
-                gameState currGameState = new gameState();
-                sendMessage(currGameState, player);
+                //gameState currGameState = new gameState();
+                //sendMessage(currGameState, player);
                 //Hashtable message = new Hashtable();
                 //message.Add("NumOfPlayers", numOfPlayers);
                 //message.Add("PlayerNum", playerNum);
@@ -1609,7 +1699,7 @@ namespace MonopolyDealServer
             MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = "You won!!! Congratulations!";
         }
 
-        public static void Table_Properties_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public static void Table_Properties_SelectionChanged()
         {
             if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack)
             {
@@ -1622,23 +1712,23 @@ namespace MonopolyDealServer
                         numOfWilds++;
                     }
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems)
+                foreach (Card card in tablePropertiesSelectedItems)
                 {
                     if (MainWindow.getPropertyType(card) == PropertyType.Wild)
                     {
                         numOfWilds--;
                     }
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems)
+                foreach (Card card in tablePropertiesSelectedItems)
                 {
                     totalValue += MainWindow.getValue(card);
 
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.SelectedItems)
+                foreach (Card card in tableMoneySelectedItems)
                 {
                     totalValue += MainWindow.getValue(card);
                 }
-                if ((totalValue >= MainWindow.payment) || ((MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems.Count >= (MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.Items.Count - numOfWilds)) && (MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.SelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.Items.Count)))
+                if ((totalValue >= MainWindow.payment) || ((tablePropertiesSelectedItems.Count >= (MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.Items.Count - numOfWilds)) && (tableMoneySelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.Items.Count)))
                 {
                     MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Content = "Make Payment";
                     MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Visibility = System.Windows.Visibility.Visible;
@@ -1650,7 +1740,7 @@ namespace MonopolyDealServer
             }
         }
 
-        public static void Table_Money_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public static void Table_Money_SelectionChanged()
         {
             if (MainWindow.stage == MainWindow.turnStage.acknowledgeAttack)
             {
@@ -1663,22 +1753,22 @@ namespace MonopolyDealServer
                         numOfWilds++;
                     }
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems)
+                foreach (Card card in tablePropertiesSelectedItems)
                 {
                     if (MainWindow.getPropertyType(card) == PropertyType.Wild)
                     {
                         numOfWilds--;
                     }
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems)
+                foreach (Card card in tablePropertiesSelectedItems)
                 {
                     totalValue += MainWindow.getValue(card);
                 }
-                foreach (Card card in MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.SelectedItems)
+                foreach (Card card in tableMoneySelectedItems)
                 {
                     totalValue += MainWindow.getValue(card);
                 }
-                if ((totalValue >= MainWindow.payment) || (((MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.Items.Count - numOfWilds)) && (MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.SelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.Items.Count)))
+                if ((totalValue >= MainWindow.payment) || (((tablePropertiesSelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.Items.Count - numOfWilds)) && (tableMoneySelectedItems.Count == MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.Items.Count)))
                 {
                     MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Content = "Make Payment";
                     MainWindow.playerTurns[MainWindow.chosenPlayer].button3.Visibility = System.Windows.Visibility.Visible;
@@ -1690,9 +1780,9 @@ namespace MonopolyDealServer
             }
         }
 
-        public static void Table_Properties_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public static void Table_Properties_MouseDoubleClick()
         {
-            if (MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex < 0)
+            if (tablePropertiesSelectedIndex < 0)
             {
                 return;
             }
@@ -1712,7 +1802,7 @@ namespace MonopolyDealServer
 
             if (MainWindow.stage == MainWindow.turnStage.forcedDeal1)
             {
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex;
+                MainWindow.cardNum = tablePropertiesSelectedIndex;
                 Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
                 MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
                 MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
@@ -1731,7 +1821,7 @@ namespace MonopolyDealServer
 
             if (MainWindow.stage == MainWindow.turnStage.rentWild)
             {
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex;
+                MainWindow.cardNum = tablePropertiesSelectedIndex;
                 Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
                 MainWindow.propIndex = MainWindow.getPropertyIndex(currentCard);
                 MainWindow.cardNum = MainWindow.AllTableProperties[MainWindow.playerNum][MainWindow.propIndex].IndexOf(currentCard);
@@ -1748,7 +1838,7 @@ namespace MonopolyDealServer
 
             if (MainWindow.stage == MainWindow.turnStage.decidePropertyTypeWild)
             {
-                MainWindow.cardNum2 = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex;
+                MainWindow.cardNum2 = tablePropertiesSelectedIndex;
                 MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
                 MainWindow.propIndex = MainWindow.getPropertyIndex(MainWindow.propertyCard);
                 MainWindow.playerTurns[MainWindow.playerNum].checkPlayCard();
@@ -1756,7 +1846,7 @@ namespace MonopolyDealServer
 
             if (MainWindow.stage == MainWindow.turnStage.moveCards)
             {
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex;
+                MainWindow.cardNum = tablePropertiesSelectedIndex;
                 MainWindow.propertyCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum);
                 //Problem... propIndex only helps IFF the property is in the normal stack.  This won't work for extra [10] stack
                 //So... I will first check the extra stack [10] when I remove a card...
@@ -1790,28 +1880,60 @@ namespace MonopolyDealServer
             }
             if (MainWindow.stage == MainWindow.turnStage.moveCardsDecideTypeWild)
             {
-                MainWindow.cardNum2 = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectedIndex;
+                MainWindow.cardNum2 = tablePropertiesSelectedIndex;
                 Card currentCard = MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
                 MainWindow.propIndex2 = MainWindow.getPropertyIndex(currentCard);
                 MainWindow.playerTurns[MainWindow.playerNum].checkMoveCard();
             }
         }
 
-        public static void Hand_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        //public static void Hand_MouseDoubleClick()
+        //{
+        //    if (MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex < 0)
+        //    {
+        //        return;
+        //    }
+        //    if (MainWindow.stage == MainWindow.turnStage.playCardFromeHand)
+        //    {
+        //        MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+        //        MainWindow.playerTurns[MainWindow.playerNum].decideCardType();
+        //    }
+
+        //    if (MainWindow.stage == MainWindow.turnStage.discard)
+        //    {
+        //        MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+        //        MainWindow.playerTurns[MainWindow.playerNum].checkDiscard();
+        //    }
+
+        //    if (MainWindow.stage == MainWindow.turnStage.slyDeal)
+        //    {
+        //        if (MainWindow.chosenPlayer != MainWindow.playerNum)
+        //        {
+        //            MainWindow.playerTurns[MainWindow.playerNum].checkSlyDeal();
+        //        }
+        //        MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+        //    }
+        //}
+
+        public static void Hand_MouseDoubleClick()
         {
-            if (MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex < 0)
+            //if (MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex < 0)
+            //{
+            //    return;
+            //}
+            if (handSelectedIndex < 0)
             {
                 return;
             }
             if (MainWindow.stage == MainWindow.turnStage.playCardFromeHand)
             {
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+                MainWindow.cardNum = handSelectedIndex;
                 MainWindow.playerTurns[MainWindow.playerNum].decideCardType();
             }
 
             if (MainWindow.stage == MainWindow.turnStage.discard)
             {
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+                MainWindow.cardNum = handSelectedIndex;
                 MainWindow.playerTurns[MainWindow.playerNum].checkDiscard();
             }
 
@@ -1821,14 +1943,14 @@ namespace MonopolyDealServer
                 {
                     MainWindow.playerTurns[MainWindow.playerNum].checkSlyDeal();
                 }
-                MainWindow.cardNum = MainWindow.playerTurns[MainWindow.playerNum].Hand.SelectedIndex;
+                MainWindow.cardNum = handSelectedIndex;
             }
         }
 
-        public static void OtherPlayer_Click(object sender, RoutedEventArgs e)
+        public static void OtherPlayer_Click()
         {
-            Button copySender = (Button)sender;
-            int playerClicked = MainWindow.otherNames[MainWindow.playerNum].IndexOf(copySender);
+            //Button copySender = (Button)sender;
+            //int playerClicked = MainWindow.otherNames[MainWindow.playerNum].IndexOf(copySender);
 
             if (MainWindow.stage == MainWindow.turnStage.debtCollect)
             {
@@ -1856,18 +1978,19 @@ namespace MonopolyDealServer
             }
         }
 
-        public static void OtherPlayer_Properties_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        public static void OtherPlayer_Properties_MouseDoubleClick()
         {
-            ListBox copySender = (ListBox)sender;
-            int playerClicked = MainWindow.otherTable_Properties[MainWindow.playerNum].IndexOf(copySender);
+            //ListBox copySender = (ListBox)sender;
+            //int playerClicked = MainWindow.otherTable_Properties[MainWindow.playerNum].IndexOf(copySender);
 
-            if (MainWindow.otherTable_Properties[MainWindow.playerNum][playerClicked].SelectedIndex < 0)
+
+            if (otherPropertiesSelectedIndex < 0)
             {
                 return;
             }
             if (MainWindow.stage == MainWindow.turnStage.slyDeal)
             {
-                MainWindow.cardNum = MainWindow.otherTable_Properties[MainWindow.playerNum][playerClicked].SelectedIndex;
+                MainWindow.cardNum = otherPropertiesSelectedIndex;
                 MainWindow.propertyCard = MainWindow.otherTable_Properties[MainWindow.playerNum][playerClicked].Items.Cast<Card>().ElementAt(MainWindow.cardNum);
                 //string chosenPlayer = buttonPlayer.Content.ToString();
                 MainWindow.chosenPlayer = playerClicked;
@@ -1889,7 +2012,7 @@ namespace MonopolyDealServer
             //}
             else if (MainWindow.stage == MainWindow.turnStage.forcedDeal2)
             {
-                MainWindow.cardNum2 = MainWindow.otherTable_Properties[MainWindow.playerNum][playerClicked].SelectedIndex;
+                MainWindow.cardNum2 = otherPropertiesSelectedIndex;
                 MainWindow.propertyCard = MainWindow.otherTable_Properties[MainWindow.playerNum][playerClicked].Items.Cast<Card>().ElementAt(MainWindow.cardNum2);
                 MainWindow.propIndex2 = MainWindow.getPropertyIndex(MainWindow.propertyCard);
                 //string chosenPlayer = buttonPlayer.Content.ToString();
@@ -1904,5 +2027,14 @@ namespace MonopolyDealServer
             MainWindow.resizeLayout();
         }
 #endregion
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            foreach (ServerSocket leftoverServer in servers)
+            {
+                leftoverServer.stop();
+            }
+            this.Close();
+        }
     }
 }

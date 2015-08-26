@@ -59,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="clientEvent.cs" />
     <Compile Include="gameState.cs" />
     <Compile Include="JsonUtilities.cs" />
     <Compile Include="playerDisplay.xaml.cs">

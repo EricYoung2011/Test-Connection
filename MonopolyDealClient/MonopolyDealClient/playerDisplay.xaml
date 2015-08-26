@@ -8,9 +8,9 @@
         <Button x:Name="button2" Content="Button" HorizontalAlignment="Left" Margin="326,266,0,0" VerticalAlignment="Top" Width="144" Height="43" Background="#FF7F74C7"/>
         <Button x:Name="button3" Content="Button" HorizontalAlignment="Left" Margin="503,266,0,0" VerticalAlignment="Top" Width="144" Height="43" Background="#FF7F74C7"/>
         <ListBox x:Name="Hand" HorizontalAlignment="Left" Height="189" Margin="10,71,0,0" VerticalAlignment="Top" Width="194" AlternationCount="5" Focusable="False" />
-        <ListBox x:Name="Table_Properties" HorizontalAlignment="Left" Height="189" Margin="228,71,0,0" VerticalAlignment="Top" Width="201" AlternationCount="5" Focusable="False" />
+        <ListBox x:Name="Table_Properties" HorizontalAlignment="Left" Height="189" Margin="228,71,0,0" VerticalAlignment="Top" Width="201" AlternationCount="5" Focusable="False" SelectionMode="Multiple" />
         <Button x:Name="buttonBack" Content="Go Back" HorizontalAlignment="Left" Margin="26,272,0,0" VerticalAlignment="Top" Width="80" Height="31" Background="#FFEC1515"/>
-        <ListBox x:Name="Table_Money" HorizontalAlignment="Left" Height="188" Margin="468,71,0,0" VerticalAlignment="Top" Width="194" AlternationCount="5" Focusable="False"/>
+        <ListBox x:Name="Table_Money" HorizontalAlignment="Left" Height="188" Margin="468,71,0,0" VerticalAlignment="Top" Width="194" AlternationCount="5" Focusable="False" SelectionMode="Multiple"/>
         <TextBox x:Name="propertiesLabel" HorizontalAlignment="Left" Height="19" Margin="244,47,0,0" TextWrapping="Wrap" Text="Properties:" VerticalAlignment="Top" Width="110" />
         <TextBox x:Name="moneyLabel" HorizontalAlignment="Left" Height="19" Margin="480,47,0,0" TextWrapping="Wrap" Text="Money:" VerticalAlignment="Top" Width="56" />
         <Button x:Name="buttonPlayer" Content="Button" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="91" Height="32" Background="#FF53C11F"/>

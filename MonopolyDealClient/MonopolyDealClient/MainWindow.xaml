@@ -1,15 +1,17 @@
 ﻿<Window x:Class="MonopolyDealClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closed="Window_Closed">
     <Grid>
         <Button x:Name="connectButton" Content="Connect" HorizontalAlignment="Left" Margin="197,226,0,0" VerticalAlignment="Top" Width="75" Click="connectButton_Click" />
         <TextBox x:Name="myIPBlock" HorizontalAlignment="Left" Height="20" Margin="61,66,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="148"/>
         <Label x:Name="instructions1" Content="Enter YOUR IP (Google)" HorizontalAlignment="Left" Margin="61,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
-        <Label x:Name="instructions2" Content="Enter server's IP (Ask Eric)" HorizontalAlignment="Left" Margin="236,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
-        <TextBox x:Name="serverIPBlock" HorizontalAlignment="Left" Height="20" Margin="236,66,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="148"/>
-        <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Left" Margin="162,128,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="nameBlock" HorizontalAlignment="Left" Height="20" Margin="162,159,0,0" TextWrapping="Wrap" Text="Eric" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="instructions2" Content="Enter server's IP (Ask Eric)" HorizontalAlignment="Left" Margin="319,22,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
+        <TextBox x:Name="serverIPBlock" HorizontalAlignment="Left" Height="20" Margin="319,66,0,0" TextWrapping="Wrap" Text="127.0.0.1" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="nameLabel" Content="Name" HorizontalAlignment="Left" Margin="319,120,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="nameBlock" HorizontalAlignment="Left" Height="20" Margin="319,151,0,0" TextWrapping="Wrap" Text="Eric" VerticalAlignment="Top" Width="148"/>
+        <TextBox x:Name="myPort" HorizontalAlignment="Left" Height="20" Margin="61,151,0,0" TextWrapping="Wrap" Text="50500" VerticalAlignment="Top" Width="148"/>
+        <Label x:Name="instructions3" Content="Enter YOUR Port (50500)" HorizontalAlignment="Left" Margin="61,120,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.396,0.063" Width="148"/>
 
     </Grid>
 </Window>

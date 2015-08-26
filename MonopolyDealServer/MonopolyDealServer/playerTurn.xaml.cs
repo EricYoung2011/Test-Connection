@@ -53,39 +53,39 @@ namespace MonopolyDealServer
         //NEED TO ADD TO CLIENT
         public void setupEvents(int playerToEnable)
         {
-            for (int i = 0; i < MainWindow.numOfPlayers; i++)
-            {
-                if (i == playerToEnable)
-                {
-                    MainWindow.playerTurns[i].Hand.MouseDoubleClick += MainWindow.Hand_MouseDoubleClick;
-                    MainWindow.playerTurns[i].Table_Properties.SelectionChanged += MainWindow.Table_Properties_SelectionChanged;
-                    MainWindow.playerTurns[i].Table_Money.SelectionChanged += MainWindow.Table_Money_SelectionChanged;
-                    MainWindow.playerTurns[i].Table_Properties.MouseDoubleClick += MainWindow.Table_Properties_MouseDoubleClick;
-                    for (int j = 0; j < MainWindow.numOfPlayers; j++)
-                    {
-                        if (j != i)
-                        {
-                            MainWindow.otherTable_Properties[i][j].MouseDoubleClick += MainWindow.OtherPlayer_Properties_MouseDoubleClick;
-                            MainWindow.otherNames[i][j].Click += MainWindow.OtherPlayer_Click;
-                        }
-                    }
-                }
-                else //everyone else
-                {
-                    MainWindow.playerTurns[i].Hand.MouseDoubleClick -= MainWindow.Hand_MouseDoubleClick;
-                    MainWindow.playerTurns[i].Table_Properties.SelectionChanged -= MainWindow.Table_Properties_SelectionChanged;
-                    MainWindow.playerTurns[i].Table_Money.SelectionChanged -= MainWindow.Table_Money_SelectionChanged;
-                    MainWindow.playerTurns[i].Table_Properties.MouseDoubleClick -= MainWindow.Table_Properties_MouseDoubleClick;
-                    for (int j = 0; j < MainWindow.numOfPlayers; j++)
-                    {
-                        if (j != i)
-                        {
-                            MainWindow.otherTable_Properties[i][j].MouseDoubleClick -= MainWindow.OtherPlayer_Properties_MouseDoubleClick;
-                            MainWindow.otherNames[i][j].Click -= MainWindow.OtherPlayer_Click;
-                        }
-                    }
-                }
-            }
+            //for (int i = 0; i < MainWindow.numOfPlayers; i++)
+            //{
+            //    if (i == playerToEnable)
+            //    {
+            //        MainWindow.playerTurns[i].Hand.MouseDoubleClick += MainWindow.Hand_MouseDoubleClick;
+            //        MainWindow.playerTurns[i].Table_Properties.SelectionChanged += MainWindow.Table_Properties_SelectionChanged;
+            //        MainWindow.playerTurns[i].Table_Money.SelectionChanged += MainWindow.Table_Money_SelectionChanged;
+            //        MainWindow.playerTurns[i].Table_Properties.MouseDoubleClick += MainWindow.Table_Properties_MouseDoubleClick;
+            //        for (int j = 0; j < MainWindow.numOfPlayers; j++)
+            //        {
+            //            if (j != i)
+            //            {
+            //                MainWindow.otherTable_Properties[i][j].MouseDoubleClick += MainWindow.OtherPlayer_Properties_MouseDoubleClick;
+            //                MainWindow.otherNames[i][j].Click += MainWindow.OtherPlayer_Click;
+            //            }
+            //        }
+            //    }
+            //    else //everyone else
+            //    {
+            //        MainWindow.playerTurns[i].Hand.MouseDoubleClick -= MainWindow.Hand_MouseDoubleClick;
+            //        MainWindow.playerTurns[i].Table_Properties.SelectionChanged -= MainWindow.Table_Properties_SelectionChanged;
+            //        MainWindow.playerTurns[i].Table_Money.SelectionChanged -= MainWindow.Table_Money_SelectionChanged;
+            //        MainWindow.playerTurns[i].Table_Properties.MouseDoubleClick -= MainWindow.Table_Properties_MouseDoubleClick;
+            //        for (int j = 0; j < MainWindow.numOfPlayers; j++)
+            //        {
+            //            if (j != i)
+            //            {
+            //                MainWindow.otherTable_Properties[i][j].MouseDoubleClick -= MainWindow.OtherPlayer_Properties_MouseDoubleClick;
+            //                MainWindow.otherNames[i][j].Click -= MainWindow.OtherPlayer_Click;
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         public void drawCards(int numToDraw)
@@ -164,13 +164,13 @@ namespace MonopolyDealServer
                     }
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void updateUniversalPrompt(string toDisplay)
         {
-            MainWindow.newUniversalPrompt = toDisplay;
-            MainWindow.constructMessages();
+            MainWindow.newUniversalPrompt += Environment.NewLine + toDisplay;
+            //MainWindow.sendGameStates();
             //for (int player = 0; player < MainWindow.numOfPlayers; player++)
             //{
             //    MainWindow.playerTurns[player].universalPrompt.Text += toDisplay + Environment.NewLine;
@@ -218,7 +218,7 @@ namespace MonopolyDealServer
             button3.Content = "End Turn";
             button3.Visibility = System.Windows.Visibility.Visible;
             buttonBack.Visibility = System.Windows.Visibility.Hidden;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
             this.UpdateLayout();
         }
 
@@ -231,7 +231,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
             //this.UpdateLayout();
         }
 
@@ -264,7 +264,7 @@ namespace MonopolyDealServer
                     break;
             }
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void playCardAsMoney()
@@ -300,6 +300,7 @@ namespace MonopolyDealServer
 
                 case Card.PassGo__1:
                     drawCards(2);
+                    updateUniversalPrompt(MainWindow.playerNames[MainWindow.playerNum] + " played a Pass-Go");
                     MainWindow.AllHands[MainWindow.playerNum].Remove(Card.PassGo__1);
                     finishPlayAction();
                     break;
@@ -377,7 +378,7 @@ namespace MonopolyDealServer
                 MainWindow.chosenPlayer = MainWindow.payersLeft[0];
                 MainWindow.playerTurns[MainWindow.chosenPlayer].acknowledgeAttack();
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
 
         }
 
@@ -477,7 +478,7 @@ namespace MonopolyDealServer
                     button2.Visibility = System.Windows.Visibility.Visible;
                     return;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
 
         }
 
@@ -492,7 +493,7 @@ namespace MonopolyDealServer
             Prompt.Content = "Select property to play Wild as.";
             //Table_Properties.IsEnabled = true;
             Table_Properties.SelectionMode = SelectionMode.Single;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void playCardAsProperty()
@@ -572,7 +573,7 @@ namespace MonopolyDealServer
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
             MainWindow.stage = MainWindow.turnStage.checkPlayCard;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         //Moving cards on table
@@ -586,7 +587,7 @@ namespace MonopolyDealServer
             buttonBack.Visibility = System.Windows.Visibility.Visible;
             //Table_Properties.IsEnabled = true;
             Table_Properties.SelectionMode = SelectionMode.Single;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void moveCardsDecideType()
@@ -667,7 +668,7 @@ namespace MonopolyDealServer
                         return;
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void moveCardsDecideTypeWild()
@@ -692,7 +693,7 @@ namespace MonopolyDealServer
                 //Table_Properties.IsEnabled = true;
                 Table_Properties.SelectionMode = SelectionMode.Single;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkMoveCard()
@@ -777,7 +778,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void finishMoveCard()
@@ -815,7 +816,7 @@ namespace MonopolyDealServer
             {
                 buttonBack.Visibility = System.Windows.Visibility.Visible;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkDiscard()
@@ -828,7 +829,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void discardCard()
@@ -890,7 +891,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Hidden;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         //House
@@ -1002,7 +1003,7 @@ namespace MonopolyDealServer
                     }
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkHouse()
@@ -1049,7 +1050,7 @@ namespace MonopolyDealServer
             button2.Content = "No";
             button2.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void house()
@@ -1171,7 +1172,7 @@ namespace MonopolyDealServer
                     }
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkHotel()
@@ -1218,7 +1219,7 @@ namespace MonopolyDealServer
             button2.Content = "No";
             button2.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void hotel()
@@ -1242,7 +1243,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void collectBirthday()
@@ -1291,7 +1292,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Hidden;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkDebtCollector()
@@ -1303,7 +1304,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void debtCollect()
@@ -1332,7 +1333,7 @@ namespace MonopolyDealServer
             buttonBack.Visibility = System.Windows.Visibility.Visible;
             //MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.IsEnabled = true;
             MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectionMode = SelectionMode.Single;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void playRentWild2()
@@ -1345,7 +1346,7 @@ namespace MonopolyDealServer
             buttonBack.Visibility = System.Windows.Visibility.Visible;
             //MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.IsEnabled = false;
             MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectionMode = SelectionMode.Single;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkRentWild()
@@ -1357,7 +1358,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void rentWild()
@@ -1501,7 +1502,7 @@ namespace MonopolyDealServer
                     }
                     return;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkRent()
@@ -1515,7 +1516,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void rent()
@@ -1573,7 +1574,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void askDoubleRent()
@@ -1586,7 +1587,7 @@ namespace MonopolyDealServer
             button2.Visibility = System.Windows.Visibility.Visible;
             button3.Visibility = System.Windows.Visibility.Hidden;
             buttonBack.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         //Forced Deal
@@ -1600,7 +1601,7 @@ namespace MonopolyDealServer
             buttonBack.Visibility = System.Windows.Visibility.Visible;
             //MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.IsEnabled = true;
             MainWindow.playerTurns[MainWindow.playerNum].Table_Properties.SelectionMode = SelectionMode.Single;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void playForcedDeal2()
@@ -1619,7 +1620,7 @@ namespace MonopolyDealServer
                     MainWindow.playerTurns[i].Table_Properties.SelectionMode = SelectionMode.Single;
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkForcedDeal()
@@ -1655,7 +1656,7 @@ namespace MonopolyDealServer
             {
                 //MainWindow.playerTurns[i].Table_Properties.IsEnabled = false;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void forcedDeal()
@@ -1682,7 +1683,7 @@ namespace MonopolyDealServer
                     MainWindow.playerTurns[i].Table_Properties.SelectionMode = SelectionMode.Single;
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void checkSlyDeal()
@@ -1718,7 +1719,7 @@ namespace MonopolyDealServer
             {
                 //MainWindow.playerTurns[i].Table_Properties.IsEnabled = false;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void slyDeal()
@@ -1745,7 +1746,7 @@ namespace MonopolyDealServer
                     MainWindow.playerTurns[i].Table_Properties.SelectionMode = SelectionMode.Single;
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void playDealBreaker2()
@@ -1860,7 +1861,7 @@ namespace MonopolyDealServer
                     }
                 }
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void dealBreak()
@@ -1956,7 +1957,7 @@ namespace MonopolyDealServer
                 button2.Content = "Just Say No";
                 button2.Visibility = System.Windows.Visibility.Visible;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void pay()
@@ -1990,7 +1991,7 @@ namespace MonopolyDealServer
                 MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Money.SelectionMode = SelectionMode.Multiple;
                 MainWindow.playerTurns[MainWindow.chosenPlayer].Table_Properties.SelectionMode = SelectionMode.Multiple;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void justSayNo()
@@ -2015,7 +2016,7 @@ namespace MonopolyDealServer
                 MainWindow.playerTurns[MainWindow.playerNum].button2.Content = "Just Say No";
                 MainWindow.playerTurns[MainWindow.playerNum].button2.Visibility = System.Windows.Visibility.Visible;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void justSayNoOwner()
@@ -2054,7 +2055,7 @@ namespace MonopolyDealServer
                     }
                     break;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
             return;
         }
 
@@ -2073,7 +2074,7 @@ namespace MonopolyDealServer
             MainWindow.playerTurns[MainWindow.playerNum].Prompt.Content = MainWindow.playerNames[MainWindow.chosenPlayer] + "OOOOoooooooo!  It just happened!  He Just Said No, to your Just Say No, of his Just Say No!";
             MainWindow.playerTurns[MainWindow.playerNum].button1.Content = "OK";
             MainWindow.playerTurns[MainWindow.playerNum].button1.Visibility = System.Windows.Visibility.Visible;
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         public void receiveForcedDeal()
@@ -2191,7 +2192,7 @@ namespace MonopolyDealServer
                 MainWindow.AllTableProperties[MainWindow.chosenPlayer][MainWindow.propIndex].Add(MainWindow.propertyCard);
                 MainWindow.playerTurns[MainWindow.playerNum].finishPlayAction();
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         //Events triggered by user
@@ -2271,7 +2272,7 @@ namespace MonopolyDealServer
         //    }
         //}
 
-        public void button1_Click(object sender, RoutedEventArgs e)
+        public void button1_Click(object sender = null, RoutedEventArgs e = null)
         {
             switch (MainWindow.stage)
             {
@@ -2841,10 +2842,10 @@ namespace MonopolyDealServer
                     return;
                 #endregion
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
-        public void button2_Click(object sender, RoutedEventArgs e)
+        public void button2_Click(object sender = null, RoutedEventArgs e = null)
         {
             switch (MainWindow.stage)
             {
@@ -3154,10 +3155,10 @@ namespace MonopolyDealServer
                     return;
                 #endregion
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
-        public void button3_Click(object sender, RoutedEventArgs e)
+        public void button3_Click(object sender = null, RoutedEventArgs e = null)
         {
             switch (MainWindow.stage)
             {
@@ -3233,10 +3234,10 @@ namespace MonopolyDealServer
                     MainWindow.playerTurns[MainWindow.playerNum].finishPlayAction();
                     return;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
-        public void buttonBack_Click(object sender, RoutedEventArgs e)
+        public void buttonBack_Click(object sender = null, RoutedEventArgs e = null)
         {
             switch (MainWindow.stage)
             {
@@ -3350,7 +3351,7 @@ namespace MonopolyDealServer
                     decidePlayType();
                     return;
             }
-            MainWindow.constructMessages();
+            //MainWindow.sendGameStates();
         }
 
         //public void Hand_MouseDoubleClick(object sender, MouseButtonEventArgs e)
